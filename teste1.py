@@ -8,8 +8,8 @@ fake = Faker('pt_BR')
 # Conexão ao MySQL para criar a base de dados e as tabelas
 mydb = mysql.connector.connect(
     host="localhost",
-    user="root",  # Usuário root do MariaDB
-    password=""  # Senha vazia
+    user="root",  
+    password=""  
 )
 
 mycursor = mydb.cursor()
@@ -18,7 +18,6 @@ mycursor = mydb.cursor()
 mycursor.execute("CREATE DATABASE IF NOT EXISTS livraria_109")
 mycursor.execute("USE livraria_109")
 
-# Criar tabela de editoras
 mycursor.execute("""
 CREATE TABLE IF NOT EXISTS editoras (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -27,7 +26,6 @@ CREATE TABLE IF NOT EXISTS editoras (
 )
 """)
 
-# Criar tabela de autores
 mycursor.execute("""
 CREATE TABLE IF NOT EXISTS autores (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -37,7 +35,6 @@ CREATE TABLE IF NOT EXISTS autores (
 )
 """)
 
-# Criar tabela de livros
 mycursor.execute("""
 CREATE TABLE IF NOT EXISTS livros (
     id INT AUTO_INCREMENT PRIMARY KEY,

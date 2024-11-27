@@ -1,12 +1,12 @@
 import mysql.connector
 import random
 
-# Conexão ao MySQL para criar o banco de dados e a tabela
+# Conexão ao MySQL para acessar o banco de dados
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",  # Usuário root do MariaDB
-    password="",  # Senha vazia
-    database="livraria_109"  # Banco de dados já criado
+    password="",  
+    database="livraria_109"  #BD
 )
 
 mycursor = mydb.cursor()

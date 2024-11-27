@@ -3,22 +3,19 @@ from faker import Faker
 import random
 from unidecode import unidecode
 
-# Inicializando o Faker para gerar dados
 fake = Faker('pt_BR')
 
-# Conexão ao MySQL para criar o banco de dados e a tabela
+# Conexão ao MySQL
 mydb = mysql.connector.connect(
     host="localhost",
-    user="root",  # Usuário root do MariaDB
-    password=""  # Senha vazia
+    user="root",  
+    password=""  
 )
 
 mycursor = mydb.cursor()
 
-# Criar o banco de dados 'livraria'
 mycursor.execute("USE livraria_109")
 
-# Criar a tabela de livros
 mycursor.execute("""
 CREATE TABLE IF NOT EXISTS livros (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -41,7 +38,6 @@ def clean_name(name):
     name = name.replace("Sr. ", "").replace("Sra. ", "")
     return unidecode(name)
 
-# Função para gerar e inserir um livro com autor e editora
 def insert_livro():
     nome_do_livro = fake.catch_phrase()
     nome_da_editora = fake.company()
@@ -61,8 +57,7 @@ def insert_livro():
     """
     val = (nome_do_livro, nome_da_editora, uf_editora, ano_publicacao, num_paginas, nome_autor, sexo_autor, cpf_autor)
     mycursor.execute(sql, val)
-
-# Gerar 50 registros de livros
+s
 for _ in range(50):
     insert_livro()
 
