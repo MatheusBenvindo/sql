@@ -1,39 +1,73 @@
 import mysql.connector
 from faker import Faker
 import random
+from unidecode import unidecode
 
-fake = Faker('pt_BR')  # Use o local pt_BR para gerar dados brasileiros
+# Inicializando o Faker para gerar dados
+fake = Faker('pt_BR')
 
-# Conexão ao banco de dados MariaDB
+# Conexão ao MySQL para criar o banco de dados e a tabela
 mydb = mysql.connector.connect(
     host="localhost",
     user="root",  # Usuário root do MariaDB
-    password="",  # Senha vazia
-    database="teste"
+    password=""  # Senha vazia
 )
 
 mycursor = mydb.cursor()
 
-def sex():
-    sexg = random.choice(['M', 'F'])
-    if sexg == 'M':
-        name = fake.name_male()
-    else:
-        name = fake.name_female()
-    return name, sexg
+# Criar o banco de dados 'livraria'
+mycursor.execute("USE livraria_109")
 
-# Gerar 50 registros falsos
-for _ in range(50):
-    nome, sexg = sex()
-    sobrenome = fake.last_name()
-    cpf = fake.cpf()
-    matricula = fake.random_number(digits=9, fix_len=True)
-    sql = f"INSERT INTO alunos (nome, sobrenome, cpf, sexo, matricula) VALUES ('{nome}', '{sobrenome}', '{cpf}', '{sexg}', '{matricula}');"
-    mycursor.execute(sql)
+# Criar a tabela de livros
+mycursor.execute("""
+CREATE TABLE IF NOT EXISTS livros (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nome_do_livro VARCHAR(50),
+    nome_da_editora VARCHAR(50),
+    uf_editora VARCHAR(2),
+    ano_publicacao INT,
+    num_paginas INT,
+    nome_autor VARCHAR(50),
+    sexo_autor CHAR(1),
+    cpf_autor VARCHAR(11)
+)
+""")
 
 mydb.commit()
+print("Banco de dados e tabela criados com sucesso.")
 
-print("Dados inseridos diretamente no banco de dados.")
+# Função para limpar os nomes (remover acentos e títulos)
+def clean_name(name):
+    name = name.replace("Sr. ", "").replace("Sra. ", "")
+    return unidecode(name)
+
+# Função para gerar e inserir um livro com autor e editora
+def insert_livro():
+    nome_do_livro = fake.catch_phrase()
+    nome_da_editora = fake.company()
+    uf_editora = random.choice(['SP', 'RJ', 'DF'])
+    ano_publicacao = random.randint(2000, 2024)
+    num_paginas = random.randint(50, 500)
+    sexo_autor = random.choice(['M', 'F'])
+    nome_autor = fake.name_male() if sexo_autor == 'M' else fake.name_female()
+    nome_autor = clean_name(nome_autor)  # Limpa o nome do autor
+    nome_do_livro = clean_name(nome_do_livro)  # Limpa o nome do livro
+    nome_da_editora = clean_name(nome_da_editora)  # Limpa o nome da editora
+    cpf_autor = fake.cpf()
+
+    sql = """
+    INSERT INTO livros (nome_do_livro, nome_da_editora, uf_editora, ano_publicacao, num_paginas, nome_autor, sexo_autor, cpf_autor)
+    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    """
+    val = (nome_do_livro, nome_da_editora, uf_editora, ano_publicacao, num_paginas, nome_autor, sexo_autor, cpf_autor)
+    mycursor.execute(sql, val)
+
+# Gerar 50 registros de livros
+for _ in range(50):
+    insert_livro()
+
+mydb.commit()
+print("50 registros inseridos com sucesso.")
 
 # Fechar a conexão
 mycursor.close()
