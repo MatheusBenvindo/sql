@@ -38,6 +38,11 @@ def clean_name(name):
     name = name.replace("Sr. ", "").replace("Sra. ", "")
     return unidecode(name)
 
+def cpf_validar():
+    cpf = fake.random_number(digits=9, fix_len=True)
+    cpf_str = f"{cpf:09d}"
+    return cpf_str
+
 def insert_livro():
     nome_do_livro = fake.catch_phrase()
     nome_da_editora = fake.company()
@@ -49,7 +54,7 @@ def insert_livro():
     nome_autor = clean_name(nome_autor)  # Limpa o nome do autor
     nome_do_livro = clean_name(nome_do_livro)  # Limpa o nome do livro
     nome_da_editora = clean_name(nome_da_editora)  # Limpa o nome da editora
-    cpf_autor = fake.cpf()
+    cpf_autor = cpf_validar()
 
     sql = """
     INSERT INTO livros (nome_do_livro, nome_da_editora, uf_editora, ano_publicacao, num_paginas, nome_autor, sexo_autor, cpf_autor)
@@ -57,7 +62,8 @@ def insert_livro():
     """
     val = (nome_do_livro, nome_da_editora, uf_editora, ano_publicacao, num_paginas, nome_autor, sexo_autor, cpf_autor)
     mycursor.execute(sql, val)
-s
+
+# Gerar 50 registros de livros
 for _ in range(50):
     insert_livro()
 
